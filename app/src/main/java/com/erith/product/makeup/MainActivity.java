@@ -31,11 +31,11 @@ import java.util.List;
 public class MainActivity extends CameraActivity implements CvCameraViewListener2, View.OnClickListener, AdapterView.OnItemClickListener {
     private static final String TAG = "OCVSample::Activity";
 
-    private static final int VIEW_MODE_RGBA = 0;
-    private static final int VIEW_MODE_GRAY = 1;
-    private static final int VIEW_MODE_CANNY = 2;
-    private static final int VIEW_MODE_FEATURES = 3;
-    private static final int VIEW_MODE_EXERCISE = 4;
+    private static final int VIEW_MODE_EXERCISE = 0;
+    private static final int VIEW_MODE_RGBA = 1;
+    private static final int VIEW_MODE_GRAY = 2;
+    private static final int VIEW_MODE_CANNY = 3;
+    private static final int VIEW_MODE_FEATURES = 4;
 
     private int mViewMode;
     private Mat mRgba;
@@ -47,7 +47,7 @@ public class MainActivity extends CameraActivity implements CvCameraViewListener
     private ListView listView;
     private FloatingActionButton floatingActionButton;
 
-    String[] listItems = new String[]{"Preview RGBA", "Preview Gray", "Preview Canny", "Preview Features", "Preview Exercise"};
+    String[] listItems = new String[]{"Preview Exercise", "Preview RGBA", "Preview Gray", "Preview Canny", "Preview Features"};
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -170,10 +170,8 @@ public class MainActivity extends CameraActivity implements CvCameraViewListener
                 break;
             case VIEW_MODE_EXERCISE:
                 mRgba = inputFrame.rgba();
-                if (counter % 2 == 0) {
-                    Core.flip(mRgba, mRgba, Imgproc.COLOR_RGBA2GRAY);
-                }
-                counter = counter + 1;
+                Imgproc.Canny(inputFrame.gray(), mIntermediateMat, 100, 80);
+                Imgproc.cvtColor(mIntermediateMat, mRgba, Imgproc.COLOR_GRAY2RGBA, 4);
                 break;
         }
 
