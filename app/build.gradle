@@ -15,7 +15,7 @@ android {
                 arguments "-DOpenCV_DIR=" + project(':opencv').projectDir + "/native/jni",
                         "-DANDROID_TOOLCHAIN=clang",
                         "-DANDROID_STL=c++_shared"
-                targets "native-lib"
+                targets "mixed_sample"
                 cppFlags "-std=c++14"
             }
         }

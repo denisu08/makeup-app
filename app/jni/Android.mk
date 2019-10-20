@@ -12,7 +12,7 @@ else
   include ../../sdk/native/jni/OpenCV.mk
 endif
 
-LOCAL_MODULE    := native-lib
+LOCAL_MODULE    := mixed_sample
 LOCAL_SRC_FILES := native-lib.cpp
 LOCAL_LDLIBS +=  -llog -ldl
 
