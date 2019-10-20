@@ -4,7 +4,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraActivity;
@@ -13,6 +20,7 @@ import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -20,23 +28,26 @@ import org.opencv.imgproc.Imgproc;
 import java.util.Collections;
 import java.util.List;
 
-public class MainActivity extends CameraActivity implements CvCameraViewListener2 {
+public class MainActivity extends CameraActivity implements CvCameraViewListener2, View.OnClickListener, AdapterView.OnItemClickListener {
     private static final String TAG = "OCVSample::Activity";
 
     private static final int VIEW_MODE_RGBA = 0;
     private static final int VIEW_MODE_GRAY = 1;
     private static final int VIEW_MODE_CANNY = 2;
-    private static final int VIEW_MODE_FEATURES = 5;
+    private static final int VIEW_MODE_FEATURES = 3;
+    private static final int VIEW_MODE_EXERCISE = 4;
 
     private int mViewMode;
     private Mat mRgba;
     private Mat mIntermediateMat;
     private Mat mGray;
 
-    private MenuItem mItemPreviewRGBA;
-    private MenuItem mItemPreviewGray;
-    private MenuItem mItemPreviewCanny;
-    private MenuItem mItemPreviewFeatures;
+    private int counter = 0;
+
+    private ListView listView;
+    private FloatingActionButton floatingActionButton;
+
+    String[] listItems = new String[]{"Preview RGBA", "Preview Gray", "Preview Canny", "Preview Features", "Preview Exercise"};
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
@@ -76,19 +87,20 @@ public class MainActivity extends CameraActivity implements CvCameraViewListener
 
         setContentView(R.layout.activity_main);
 
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(this);
+
+        listView = (ListView) findViewById(R.id.lvToDoList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, listItems);
+        listView.setAdapter(adapter);
+        listView.setChoiceMode(listView.CHOICE_MODE_SINGLE);
+        listView.setSelection(0);
+        listView.setOnItemClickListener(this);
+
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_surface_view);
         mOpenCvCameraView.setVisibility(CameraBridgeViewBase.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i(TAG, "called onCreateOptionsMenu");
-        mItemPreviewRGBA = menu.add("Preview RGBA");
-        mItemPreviewGray = menu.add("Preview GRAY");
-        mItemPreviewCanny = menu.add("Canny");
-        mItemPreviewFeatures = menu.add("Find features");
-        return true;
     }
 
     @Override
@@ -156,26 +168,29 @@ public class MainActivity extends CameraActivity implements CvCameraViewListener
                 mGray = inputFrame.gray();
                 FindFeatures(mGray.getNativeObjAddr(), mRgba.getNativeObjAddr());
                 break;
+            case VIEW_MODE_EXERCISE:
+                mRgba = inputFrame.rgba();
+                if (counter % 2 == 0) {
+                    Core.flip(mRgba, mRgba, Imgproc.COLOR_RGBA2GRAY);
+                }
+                counter = counter + 1;
+                break;
         }
 
         return mRgba;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Log.i(TAG, "called onOptionsItemSelected; selected item: " + item);
+    public native void FindFeatures(long matAddrGr, long matAddrRgba);
 
-        if (item == mItemPreviewRGBA) {
-            mViewMode = VIEW_MODE_RGBA;
-        } else if (item == mItemPreviewGray) {
-            mViewMode = VIEW_MODE_GRAY;
-        } else if (item == mItemPreviewCanny) {
-            mViewMode = VIEW_MODE_CANNY;
-        } else if (item == mItemPreviewFeatures) {
-            mViewMode = VIEW_MODE_FEATURES;
-        }
-
-        return true;
+    @Override
+    public void onClick(View v) {
+        this.listView.setVisibility(this.listView.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
     }
 
-    public native void FindFeatures(long matAddrGr, long matAddrRgba);
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        this.mViewMode = position;
+        this.listView.setVisibility(View.INVISIBLE);
+        Toast.makeText(MainActivity.this, "Selected -> " + listItems[position], Toast.LENGTH_SHORT).show();
+    }
 }

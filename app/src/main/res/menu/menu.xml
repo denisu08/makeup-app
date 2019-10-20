@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <item android:id="@+id/mItemPreviewExercise" android:title="Preview Exercise"></item>
+    <item android:id="@+id/mItemPreviewRGBA" android:title="Preview RGBA"></item>
+    <item android:id="@+id/mItemPreviewGray" android:title="Preview GRAY"></item>
+    <item android:id="@+id/mItemPreviewCanny" android:title="Canny"></item>
+    <item android:id="@+id/mItemPreviewFeatures" android:title="Find features"></item>
+
+</menu>
