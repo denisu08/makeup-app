@@ -13,11 +13,15 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DOpenCV_DIR=" + project(':opencv').projectDir + "/native/jni",
+                        "-Ddlib_DIR=" + rootProject.projectDir + "/dlib_native/lib/cmake/dlib",
                         "-DANDROID_TOOLCHAIN=clang",
                         "-DANDROID_STL=c++_shared"
                 targets "mixed_sample"
                 cppFlags "-std=c++14"
             }
+        }
+        ndk {
+            abiFilters "armeabi-v7a"
         }
     }
     buildTypes {

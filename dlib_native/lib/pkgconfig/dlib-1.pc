@@ -1,0 +1,8 @@
+libdir=D:/development/opencv/dlib-19.18/dlib_native/lib
+includedir=D:/development/opencv/dlib-19.18/dlib_native/include
+
+Name: dlib
+Description: Numerical and networking C++ library
+Version: 19.18.99
+Libs: -L${libdir} -ldlib 
+Cflags: -I${includedir} 
